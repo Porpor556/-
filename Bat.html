@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ปอตีแบต</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4CAF50">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 10px; }
+    .settings { margin-bottom: 20px; }
+    input { padding: 5px; width: 80px; text-align: center; }
+    .court { display: flex; gap: 50px; margin-bottom: 30px; }
+    .team {
+      text-align: center;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      width: 160px;
+    }
+    .score { font-size: 48px; margin: 20px 0; color: #007700; }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+    }
+    .add { background: #4CAF50; color: white; }
+    .minus { background: #f44336; color: white; }
+    .reset { margin-top: 20px; background: #333; color: white; }
+    .fullscreen { background: #2196F3; color: white; }
+    .winner { font-size: 24px; color: #d2691e; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <h1>🏸 ปอตีแบต</h1>
+
+  <div class="settings">
+    <label>เล่นถึง: </label>
+    <input type="number" id="maxScore" value="21"> แต้ม
+    <button onclick="setMaxScore()">ตั้งค่า</button>
+  </div>
+
+  <div class="court">
+    <div class="team">
+      <h2>ทีม ก้อย</h2>
+      <div class="score" id="scoreA">0</div>
+      <button class="add" onclick="addPoint('A')">+1</button>
+      <button class="minus" onclick="removePoint('A')">-1</button>
+    </div>
+
+    <div class="team">
+      <h2>ทีม ยุ</h2>
+      <div class="score" id="scoreB">0</div>
+      <button class="add" onclick="addPoint('B')">+1</button>
+      <button class="minus" onclick="removePoint('B')">-1</button>
+    </div>
+  </div>
+
+  <button class="reset" onclick="resetGame()">รีเซ็ตคะแนน</button>
+  <button class="fullscreen" onclick="toggleFullscreen()">เต็มจอ</button>
+  <div id="winner" class="winner"></div>
+
+  <script>
+    let scoreA = 0;
+    let scoreB = 0;
+    let maxScore = 21;
+
+    function setMaxScore() {
+      let input = document.getElementById("maxScore").value;
+      if (input > 0) {
+        maxScore = parseInt(input);
+        resetGame();
+      } else {
+        alert("กรุณากำหนดแต้มมากกว่า 0");
+      }
+    }
+
+    function addPoint(team) {
+      if (document.getElementById("winner").innerText !== "") return;
+      if (team === 'A') scoreA++;
+      if (team === 'B') scoreB++;
+      updateScore();
+      checkWinner();
+    }
+
+    function removePoint(team) {
+      if (team === 'A' && scoreA > 0) scoreA--;
+      if (team === 'B' && scoreB > 0) scoreB--;
+      updateScore();
+    }
+
+    function updateScore() {
+      document.getElementById("scoreA").innerText = scoreA;
+      document.getElementById("scoreB").innerText = scoreB;
+    }
+
+    function checkWinner() {
+      if (scoreA >= maxScore && scoreA - scoreB >= 2) {
+        document.getElementById("winner").innerText = "🏆 ทีม ก้อย ชนะ!";
+      } else if (scoreB >= maxScore && scoreB - scoreA >= 2) {
+        document.getElementById("winner").innerText = "🏆 ทีม ยุ ชนะ!";
+      }
+    }
+
+    function resetGame() {
+      scoreA = 0;
+      scoreB = 0;
+      updateScore();
+      document.getElementById("winner").innerText = "";
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((err) => {
+          alert(`ไม่สามารถเข้าสู่โหมดเต็มจอ: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").then(() => {
+        console.log("Service Worker ลงทะเบียนแล้ว");
+      });
+    }
+  </script>
+</body>
+</html>
