@@ -1,7 +1,7 @@
 {
   "name": "นับคะแนนแบดมินตัน",
   "short_name": "Badminton",
-  "start_url": "badminton.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
